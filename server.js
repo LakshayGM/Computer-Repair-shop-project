@@ -6,7 +6,7 @@ const db = require('./db');
 console.log("DB TYPE:", typeof db);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -114,6 +114,46 @@ app.get('/users', async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+app.get('/setup-db', async (req, res) => {
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+      );
+    `);
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS items (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        quantity INT DEFAULT 0,
+        price INT,
+        min_stock INT DEFAULT 5
+      );
+    `);
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id SERIAL PRIMARY KEY,
+        item_id INT REFERENCES items(id) ON DELETE CASCADE,
+        quantity_used INT,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await db.query(`
+      INSERT INTO users (username, password)
+      VALUES ('Lakshay', '7777')
+      ON CONFLICT (username) DO NOTHING;
+    `);
+
+    res.send("✅ Database setup done");
+  } catch (err) {
+    res.send("❌ ERROR: " + err.message);
   }
 });
 
