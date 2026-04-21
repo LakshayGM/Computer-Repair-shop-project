@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepairDesk Pro - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="login-split">
+        <!-- Brand / Graphic Side -->
+        <div class="login-left">
+            <div class="bg-grid"></div>
+            <div class="login-left-content">
+                <h1>Manage Your Shop Like a Pro.</h1>
+                <p>Welcome to the premium point of sale and inventory management software built specifically for modern device repair shops.</p>
+                <div style="margin-top: 3rem; background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                        <div style="width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">⚡</div>
+                        <h3 style="color: white; margin: 0;">Supercharge workflow</h3>
+                    </div>
+                    <p style="font-size: 0.95rem; margin: 0;">Everything you need from repair tickets, point of sale, inventory handling and reporting in one complete platform.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Form Side -->
+        <div class="login-right">
+            <div class="login-form-container">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <h2 style="margin: 0; font-size: 1.5rem;">RepairShop<span style="color:var(--primary);">Pro</span></h2>
+                </div>
+                
+                <h2 style="font-size: 2rem;">Welcome back</h2>
+                <p class="subtitle" style="font-size: 1rem;">Please enter your credentials to log in.</p>
+
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" class="form-control" placeholder="Enter your username" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 2rem;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1.05rem;">Sign In to Dashboard</button>
+                    
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Secure access provided by RepairShop IT</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
