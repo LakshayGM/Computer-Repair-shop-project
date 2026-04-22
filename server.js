@@ -110,24 +110,26 @@ app.post('/add-item', async (req, res) => {
 
   try {
     const existing = await db.query(
-      'SELECT * FROM items WHERE name = $1',
+      'SELECT id FROM items WHERE name = $1',
       [name]
     );
 
     if (existing.rows.length > 0) {
       await db.query(
         'UPDATE items SET quantity = quantity + $1, price = $2 WHERE name = $3',
-        [quantity, price, name]
+        [parseInt(quantity), parseFloat(price), name]
       );
     } else {
       await db.query(
         'INSERT INTO items (name, quantity, price) VALUES ($1, $2, $3)',
-        [name, quantity, price]
+        [name, parseInt(quantity), parseFloat(price)]
       );
     }
 
     res.json({ success: true });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
