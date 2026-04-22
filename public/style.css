@@ -428,6 +428,17 @@ tbody tr:hover {
     justify-content: center;
     align-items: center;
     padding: 3rem;
+  background:
+    linear-gradient(
+        to right,
+        rgba(11,16,32,0.25),
+        rgba(11,16,32,0.55),
+        #0b1020
+    ),
+    url('./login_image.png') no-repeat right center;
+
+background-size: 100%;
+background-color: #0b1020;
 }
 
 .login-form-container {
