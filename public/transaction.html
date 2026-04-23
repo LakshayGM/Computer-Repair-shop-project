@@ -19,21 +19,40 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="dashboard.html" class="nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
                     Inventory Dashboard
                 </a>
                 <a href="transaction.html" class="nav-item active">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
                     Transactions
                 </a>
                 <a href="employees.html" class="nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
                     Employees
                 </a>
             </nav>
             <div style="padding: 1.5rem 1rem;">
-                <button id="logoutBtn" class="btn btn-outline" style="width: 100%; border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <button id="logoutBtn" class="btn btn-outline"
+                    style="width: 100%; border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
                     Log Out
                 </button>
             </div>
@@ -47,12 +66,20 @@
                     <h1 style="font-size: 1.25rem;">Transaction Log</h1>
                 </div>
                 <div class="topbar-actions">
-                    <button id="themeToggleBtn" class="btn btn-outline" style="padding: 0.5rem; border-radius: 50%; border: none;" title="Toggle Dark/Light Mode">
-                        <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <button id="themeToggleBtn" class="btn btn-outline"
+                        style="padding: 0.5rem; border-radius: 50%; border: none;" title="Toggle Dark/Light Mode">
+                        <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
                     </button>
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-left: 0.5rem;">
-                        <span id="navUsername" style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">Welcome, Admin</span>
-                        <div id="navAvatar" style="width: 36px; height: 36px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">A</div>
+                        <span id="navUsername"
+                            style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">Welcome, Admin</span>
+                        <div id="navAvatar"
+                            style="width: 36px; height: 36px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                            A</div>
                     </div>
                 </div>
             </header>
@@ -63,18 +90,27 @@
                 <div class="card" style="margin-bottom: 1.5rem;" id="recommendationsCard">
                     <div class="card-header">
                         <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                </path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
                             Smart Stock Recommendations
                         </h3>
                         <span class="subtitle">AI-driven predictions based on your transaction history</span>
                     </div>
-                    <div id="recommendationsBody" style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0;">
+                    <div id="recommendationsBody"
+                        style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0;">
                         <!-- Filled by JS -->
                     </div>
                 </div>
 
                 <div class="grid-cols-2">
-                    
+
                     <!-- Log Transaction Panel -->
                     <div class="card">
                         <div class="card-header">
@@ -91,23 +127,30 @@
                             <div class="input-group">
                                 <label>Quantity Used</label>
                                 <div style="display: flex; gap: 0.5rem; width: 100%;">
-                                    <input type="number" id="transactionQty" class="form-control" placeholder="1" min="1" required style="margin-bottom: 0;">
-                                    <button type="button" id="maxQtyBtn" class="btn btn-outline" style="white-space: nowrap;">Set Max</button>
+                                    <input type="number" id="transactionQty" class="form-control" placeholder="1"
+                                        min="1" required style="margin-bottom: 0;">
+                                    <button type="button" id="maxQtyBtn" class="btn btn-outline"
+                                        style="white-space: nowrap;">Set Max</button>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Log Usage & Deduct Stock</button>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Log
+                                Usage & Deduct Stock</button>
                         </form>
                     </div>
 
                     <!-- Transactions Table Panel -->
                     <div class="card" style="display: flex; flex-direction: column;">
-                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div class="card-header"
+                            style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div>
                                 <h3 style="margin: 0; font-size: 1.1rem;">Recent Transactions</h3>
                                 <span class="subtitle">History of recorded usages</span>
                             </div>
-                            <button id="downloadTransactionsCsv" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.25rem"></svg>
+                            <button id="downloadTransactionsCsv" class="btn btn-outline"
+                                style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="margin-right:0.25rem"></svg>
                                 Export CSV
                             </button>
                         </div>

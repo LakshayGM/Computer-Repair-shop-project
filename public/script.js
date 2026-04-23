@@ -19,7 +19,7 @@ if (themeToggleBtn) {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        
+
         if (themeIcon) {
             themeIcon.innerHTML = newTheme === 'dark' ? sunSvg : moonSvg;
         }
@@ -104,7 +104,6 @@ if (addItemForm) {
         itemNameSelect.addEventListener('change', (e) => {
             const selectedItem = e.target.value;
             if (averagePrices[selectedItem] !== undefined) {
-                // Formatting to 2 decimal places
                 itemPriceInput.value = averagePrices[selectedItem].toFixed(2);
             }
         });
@@ -286,10 +285,10 @@ async function loadItems() {
         // We'll just use the items array
         const labels = items.filter(item => item.quantity > 0).map(item => item.name);
         const data = items.filter(item => item.quantity > 0).map(item => item.quantity);
-        
+
         // Generate appealing colors based on length
         const colors = [
-            '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', 
+            '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444',
             '#ec4899', '#3b82f6', '#14b8a6', '#84cc16', '#a855f7'
         ];
         const bgColors = data.map((_, i) => colors[i % colors.length]);
@@ -316,9 +315,9 @@ async function loadItems() {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
+                        legend: {
                             position: 'right',
-                            labels: { color: '#f8fafc', boxWidth: 12, padding: 10, font: { size: 11 } } 
+                            labels: { color: '#f8fafc', boxWidth: 12, padding: 10, font: { size: 11 } }
                         }
                     },
                     cutout: '65%'
@@ -410,7 +409,7 @@ async function loadRecommendations() {
     try {
         const recommendationsBody = document.getElementById('recommendationsBody');
         if (!recommendationsBody) return;
-        
+
         // Clear previous content
         recommendationsBody.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; padding: 0.5rem 1rem;">Analyzing transaction data...</div>';
 
@@ -418,18 +417,18 @@ async function loadRecommendations() {
             fetch('/items'),
             fetch('/transactions')
         ]);
-        
+
         const items = await itemsRes.json();
         const transactions = await transRes.json();
-        
+
         // Group transactions by item name and calculate total quantity used
         const consumption = {};
         let firstTransactionDate = new Date(); // To find the oldest transaction
-        
+
         transactions.forEach(t => {
             const date = new Date(t.date);
             if (date < firstTransactionDate) firstTransactionDate = date;
-            
+
             if (!consumption[t.item_name]) {
                 consumption[t.item_name] = 0;
             }
@@ -439,7 +438,7 @@ async function loadRecommendations() {
         // Calculate days elapsed since the very first transaction to determine average daily rate
         // Minimum 1 day to prevent division by zero
         const daysElapsed = Math.max(1, Math.ceil((new Date() - firstTransactionDate) / (1000 * 60 * 60 * 24)));
-        
+
         let alertsHtml = '';
         let hasAlerts = false;
 
@@ -447,10 +446,10 @@ async function loadRecommendations() {
             if (consumption[item.name]) {
                 const totalUsed = consumption[item.name];
                 const dailyRate = totalUsed / daysElapsed;
-                
+
                 if (dailyRate > 0) {
                     const daysLeft = Math.floor(item.quantity / dailyRate);
-                    
+
                     if (daysLeft <= 3 && item.quantity > 0) {
                         hasAlerts = true;
                         alertsHtml += `
