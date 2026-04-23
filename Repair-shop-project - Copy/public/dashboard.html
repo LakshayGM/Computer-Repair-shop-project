@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Repair Shop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+    <nav class="navbar">
+        <h2>Repair Shop System</h2>
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
+    </nav>
+    <div class="container">
+        <div class="form-container">
+            <h3>Add New Item</h3>
+            <form id="addItemForm">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="itemQty" required>
+                </div>
+                <div class="input-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" id="itemPrice" required>
+                </div>
+                <button type="submit" class="btn btn-add">Add Item</button>
+            </form>
+        </div>
+        <div class="table-container">
+            <div class="table-header">
+                <h3>Inventory Items</h3>
+                <button id="downloadCsv" class="btn btn-csv">Download CSV</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Min Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

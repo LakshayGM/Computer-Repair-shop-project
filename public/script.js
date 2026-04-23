@@ -158,6 +158,7 @@ const addTransactionForm = document.getElementById('addTransactionForm');
 if (addTransactionForm) {
     loadItems(); // Need to load items to populate dropdown
     loadTransactions();
+    loadRecommendations();
 
     const maxQtyBtn = document.getElementById('maxQtyBtn');
     if (maxQtyBtn) {
@@ -190,6 +191,7 @@ if (addTransactionForm) {
             addTransactionForm.reset();
             loadItems();
             loadTransactions();
+            loadRecommendations();
         } else {
             alert('Failed to log transaction');
         }
@@ -401,5 +403,112 @@ async function loadEmployees() {
         });
     } catch (e) {
         console.error("Error loading employees:", e);
+    }
+}
+
+async function loadRecommendations() {
+    try {
+        const recommendationsBody = document.getElementById('recommendationsBody');
+        if (!recommendationsBody) return;
+        
+        // Clear previous content
+        recommendationsBody.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; padding: 0.5rem 1rem;">Analyzing transaction data...</div>';
+
+        const [itemsRes, transRes] = await Promise.all([
+            fetch('/items'),
+            fetch('/transactions')
+        ]);
+        
+        const items = await itemsRes.json();
+        const transactions = await transRes.json();
+        
+        // Group transactions by item name and calculate total quantity used
+        const consumption = {};
+        let firstTransactionDate = new Date(); // To find the oldest transaction
+        
+        transactions.forEach(t => {
+            const date = new Date(t.date);
+            if (date < firstTransactionDate) firstTransactionDate = date;
+            
+            if (!consumption[t.item_name]) {
+                consumption[t.item_name] = 0;
+            }
+            consumption[t.item_name] += t.quantity_used;
+        });
+
+        // Calculate days elapsed since the very first transaction to determine average daily rate
+        // Minimum 1 day to prevent division by zero
+        const daysElapsed = Math.max(1, Math.ceil((new Date() - firstTransactionDate) / (1000 * 60 * 60 * 24)));
+        
+        let alertsHtml = '';
+        let hasAlerts = false;
+
+        items.forEach(item => {
+            if (consumption[item.name]) {
+                const totalUsed = consumption[item.name];
+                const dailyRate = totalUsed / daysElapsed;
+                
+                if (dailyRate > 0) {
+                    const daysLeft = Math.floor(item.quantity / dailyRate);
+                    
+                    if (daysLeft <= 3 && item.quantity > 0) {
+                        hasAlerts = true;
+                        alertsHtml += `
+                            <div style="background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; margin: 0 1rem;">
+                                <div>
+                                    <strong style="color: #f8fafc;">${item.name}</strong> 
+                                    <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 0.5rem;">Current Stock: ${item.quantity}</span>
+                                </div>
+                                <div style="color: #f59e0b; font-weight: 600; font-size: 0.9rem;">
+                                    Stock gonna finish in ${daysLeft === 0 ? 'less than 1' : daysLeft} day(s)!
+                                </div>
+                            </div>
+                        `;
+                    } else if (item.quantity === 0) {
+                        hasAlerts = true;
+                        alertsHtml += `
+                            <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; margin: 0 1rem;">
+                                <div>
+                                    <strong style="color: #f8fafc;">${item.name}</strong>
+                                </div>
+                                <div style="color: #ef4444; font-weight: 600; font-size: 0.9rem;">
+                                    Out of stock!
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } else if (item.quantity === 0) {
+                hasAlerts = true;
+                alertsHtml += `
+                    <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; margin: 0 1rem;">
+                        <div>
+                            <strong style="color: #f8fafc;">${item.name}</strong>
+                        </div>
+                        <div style="color: #ef4444; font-weight: 600; font-size: 0.9rem;">
+                            Out of stock!
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        if (!hasAlerts) {
+            alertsHtml = `
+                <div style="background-color: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; margin: 0 1rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span style="color: #10b981; font-weight: 500;">All stock levels are stable. No immediate restock required based on usage.</span>
+                </div>
+            `;
+        }
+
+        recommendationsBody.innerHTML = alertsHtml;
+
+    } catch (e) {
+        console.error("Error loading recommendations:", e);
+        const recommendationsBody = document.getElementById('recommendationsBody');
+        if (recommendationsBody) {
+            recommendationsBody.innerHTML = '<div style="color: #ef4444; font-size: 0.9rem; padding: 0.5rem 1rem;">Failed to load recommendations.</div>';
+        }
     }
 }
