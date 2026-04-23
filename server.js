@@ -108,6 +108,10 @@ app.get('/items', async (req, res) => {
 app.post('/add-item', async (req, res) => {
   const { name, quantity, price } = req.body;
 
+  if (parseInt(quantity) < 0 || parseFloat(price) < 0) {
+    return res.status(400).json({ error: 'Quantity and price cannot be negative' });
+  }
+
   try {
     const existing = await db.query(
       'SELECT id FROM items WHERE name = $1',
