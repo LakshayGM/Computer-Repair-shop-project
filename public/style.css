@@ -305,9 +305,13 @@ h1, h2, h3, h4 {
     margin-bottom: 0.4rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-main);
+    color: #dbe6ff;
+    font-weight: 500;
 }
-
+.input-group input ::placeholder {
+    color: #6b7280;
+    opacity: 1;
+}
 .form-control {
     width: 100%;
     padding: 0.65rem 1rem;
@@ -445,6 +449,8 @@ background-color: #0b1020;
 .login-form-container {
     width: 100%;
     max-width: 400px;
+    background: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(1px);
 }
 
 .login-form-container .logo {

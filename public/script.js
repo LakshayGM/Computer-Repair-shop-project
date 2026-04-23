@@ -34,7 +34,7 @@ if (!isLoginPage && localStorage.getItem('loggedIn') !== 'true') {
 
 // Display User in Topbar
 if (!isLoginPage) {
-    const storedUsername = localStorage.getItem('username') || 'LAkshay';
+    const storedUsername = localStorage.getItem('username') || 'Lakshay';
     const navUsername = document.getElementById('navUsername');
     const navAvatar = document.getElementById('navAvatar');
     if (navUsername) navUsername.textContent = `Welcome, ${storedUsername}`;
