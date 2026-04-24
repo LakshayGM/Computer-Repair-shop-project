@@ -200,8 +200,26 @@ if (addTransactionForm) {
 
     addTransactionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const item_id = document.getElementById('transactionItem').value;
-        const quantity_used = document.getElementById('transactionQty').value;
+        const selectItem = document.getElementById('transactionItem');
+        const item_id = selectItem.value;
+        const quantity_used = parseInt(document.getElementById('transactionQty').value, 10);
+
+        if (selectItem.selectedIndex > 0) {
+            const selectedOption = selectItem.options[selectItem.selectedIndex];
+            const maxAvailable = parseInt(selectedOption.dataset.max, 10);
+
+            if (quantity_used > maxAvailable) {
+                alert(`Cannot use more than available quantity (${maxAvailable})`);
+                return;
+            }
+            if (quantity_used <= 0) {
+                alert('Please enter a valid quantity.');
+                return;
+            }
+        } else {
+             alert('Please select an item first.');
+             return;
+        }
 
         const res = await fetch('/add-transaction', {
             method: 'POST',

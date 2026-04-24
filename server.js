@@ -143,6 +143,15 @@ app.post('/add-transaction', async (req, res) => {
   const { item_id, quantity_used } = req.body;
 
   try {
+    // CHECK AVAILABLE STOCK
+    const item = await db.query('SELECT quantity FROM items WHERE id = $1', [item_id]);
+    if (item.rows.length === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    if (parseInt(quantity_used) > item.rows[0].quantity) {
+      return res.status(400).json({ error: 'Not enough stock available' });
+    }
+
     // INSERT TRANSACTION
     await db.query(
       'INSERT INTO transactions (item_id, quantity_used) VALUES ($1, $2)',
