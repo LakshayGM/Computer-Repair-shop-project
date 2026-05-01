@@ -90,6 +90,18 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
  }
 });
+// for local login, =(hardcoded — no DB needed):
+/*
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (username === 'Lakshay' && password === '7777') {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
+});
+*/
 
 // GET ITEMS
 app.get('/items', async (req, res) => {
