@@ -88,7 +88,7 @@ app.post('/login', async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
-  }
+ }
 });
 
 // GET ITEMS
@@ -107,6 +107,10 @@ app.get('/items', async (req, res) => {
 // ADD ITEM
 app.post('/add-item', async (req, res) => {
   const { name, quantity, price } = req.body;
+
+  if (parseInt(quantity) < 0 || parseFloat(price) < 0) {
+    return res.status(400).json({ error: 'Quantity and price cannot be negative' });
+  }
 
   try {
     const existing = await db.query(
@@ -139,6 +143,15 @@ app.post('/add-transaction', async (req, res) => {
   const { item_id, quantity_used } = req.body;
 
   try {
+    // CHECK AVAILABLE STOCK
+    const item = await db.query('SELECT quantity FROM items WHERE id = $1', [item_id]);
+    if (item.rows.length === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    if (parseInt(quantity_used) > item.rows[0].quantity) {
+      return res.status(400).json({ error: 'Not enough stock available' });
+    }
+
     // INSERT TRANSACTION
     await db.query(
       'INSERT INTO transactions (item_id, quantity_used) VALUES ($1, $2)',
@@ -193,5 +206,5 @@ app.get('/users', async (req, res) => {
 
 // START SERVER
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port http://localhost:${PORT}`);
 });

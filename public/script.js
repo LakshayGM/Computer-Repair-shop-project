@@ -1,3 +1,4 @@
+
 // Theme Handling
 const savedTheme = localStorage.getItem('theme') || 'light';
 if (savedTheme === 'dark') {
@@ -23,7 +24,31 @@ if (themeToggleBtn) {
         if (themeIcon) {
             themeIcon.innerHTML = newTheme === 'dark' ? sunSvg : moonSvg;
         }
+
+        if (typeof updateChartsTheme === 'function') {
+            updateChartsTheme(newTheme);
+        }
     });
+}
+
+
+function updateChartsTheme(theme) {
+    const textColor = theme === 'dark' ? '#94a3b8' : '#64748B';
+    const legendColor = theme === 'dark' ? '#f8fafc' : '#1e293b';
+    const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+
+    if (window.inventoryChartInstance) {
+        window.inventoryChartInstance.options.scales.y.grid.color = gridColor;
+        window.inventoryChartInstance.options.scales.y.ticks.color = textColor;
+        window.inventoryChartInstance.options.scales.x.ticks.color = textColor;
+        window.inventoryChartInstance.options.plugins.legend.labels.color = legendColor;
+        window.inventoryChartInstance.update();
+    }
+    
+    if (window.inventoryPieChartInstance) {
+        window.inventoryPieChartInstance.options.plugins.legend.labels.color = legendColor;
+        window.inventoryPieChartInstance.update();
+    }
 }
 
 // Global Auth Check
@@ -55,22 +80,24 @@ const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const password = document.getElementById('password').value; // ← ADD THIS
 
         const res = await fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }) // ← ADD password HERE
         });
 
         const data = await res.json();
+
         if (data.success) {
             localStorage.setItem('loggedIn', 'true');
             localStorage.setItem('username', username);
             window.location.href = '/dashboard.html';
         } else {
-            alert('Login failed: Invalid credentials');
+            alert('Login failed');
         }
     });
 }
@@ -158,6 +185,7 @@ const addTransactionForm = document.getElementById('addTransactionForm');
 if (addTransactionForm) {
     loadItems(); // Need to load items to populate dropdown
     loadTransactions();
+    loadRecommendations();
 
     const maxQtyBtn = document.getElementById('maxQtyBtn');
     if (maxQtyBtn) {
@@ -177,8 +205,26 @@ if (addTransactionForm) {
 
     addTransactionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const item_id = document.getElementById('transactionItem').value;
-        const quantity_used = document.getElementById('transactionQty').value;
+        const selectItem = document.getElementById('transactionItem');
+        const item_id = selectItem.value;
+        const quantity_used = parseInt(document.getElementById('transactionQty').value, 10);
+
+        if (selectItem.selectedIndex > 0) {
+            const selectedOption = selectItem.options[selectItem.selectedIndex];
+            const maxAvailable = parseInt(selectedOption.dataset.max, 10);
+
+            if (quantity_used > maxAvailable) {
+                alert(`Cannot use more than available quantity (${maxAvailable})`);
+                return;
+            }
+            if (quantity_used <= 0) {
+                alert('Please enter a valid quantity.');
+                return;
+            }
+        } else {
+             alert('Please select an item first.');
+             return;
+        }
 
         const res = await fetch('/add-transaction', {
             method: 'POST',
@@ -190,6 +236,7 @@ if (addTransactionForm) {
             addTransactionForm.reset();
             loadItems();
             loadTransactions();
+            loadRecommendations();
         } else {
             alert('Failed to log transaction');
         }
@@ -219,10 +266,23 @@ if (downloadTransactionsCsv) {
     });
 }
 
+// Sorting state for transaction quantities
+let transactionQtySortAsc = false;
+let transactionQtySortActive = false;
+
 // Employees Handling
 const employeesBody = document.getElementById('employeesBody');
 if (employeesBody) {
     loadEmployees();
+}
+
+const sortQtyHeader = document.getElementById('sortQtyHeader');
+if (sortQtyHeader) {
+    sortQtyHeader.addEventListener('click', () => {
+        transactionQtySortActive = true;
+        transactionQtySortAsc = !transactionQtySortAsc;
+        loadTransactions();
+    });
 }
 
 // Data Loaders
@@ -233,6 +293,11 @@ async function loadItems() {
     // Update Chart.js if it exists
     const ctx = document.getElementById('inventoryChart');
     if (ctx) {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const textColor = currentTheme === 'dark' ? '#94a3b8' : '#64748B';
+        const legendColor = currentTheme === 'dark' ? '#f8fafc' : '#1e293b';
+        const gridColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+
         const labels = items.map(item => item.name);
         const data = items.map(item => item.quantity);
         // Highlight low stock (e.g., < 5) in warning color
@@ -242,6 +307,10 @@ async function loadItems() {
             window.inventoryChartInstance.data.labels = labels;
             window.inventoryChartInstance.data.datasets[0].data = data;
             window.inventoryChartInstance.data.datasets[0].backgroundColor = bgColors;
+            window.inventoryChartInstance.options.scales.y.grid.color = gridColor;
+            window.inventoryChartInstance.options.scales.y.ticks.color = textColor;
+            window.inventoryChartInstance.options.scales.x.ticks.color = textColor;
+            window.inventoryChartInstance.options.plugins.legend.labels.color = legendColor;
             window.inventoryChartInstance.update();
         } else {
             window.inventoryChartInstance = new Chart(ctx, {
@@ -261,16 +330,16 @@ async function loadItems() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#94a3b8' }
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { color: '#94a3b8' }
+                            ticks: { color: textColor }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#f8fafc' } }
+                        legend: { labels: { color: legendColor } }
                     }
                 }
             });
@@ -280,6 +349,9 @@ async function loadItems() {
     // Update Pie Chart if it exists
     const pieCtx = document.getElementById('inventoryPieChart');
     if (pieCtx) {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const legendColor = currentTheme === 'dark' ? '#f8fafc' : '#1e293b';
+
         // Group quantities by category (if names have similarities, else just use item labels)
         // We'll just use the items array
         const labels = items.filter(item => item.quantity > 0).map(item => item.name);
@@ -296,6 +368,7 @@ async function loadItems() {
             window.inventoryPieChartInstance.data.labels = labels;
             window.inventoryPieChartInstance.data.datasets[0].data = data;
             window.inventoryPieChartInstance.data.datasets[0].backgroundColor = bgColors;
+            window.inventoryPieChartInstance.options.plugins.legend.labels.color = legendColor;
             window.inventoryPieChartInstance.update();
         } else {
             window.inventoryPieChartInstance = new Chart(pieCtx, {
@@ -366,6 +439,23 @@ async function loadTransactions() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
+        if (transactionQtySortActive) {
+            transactions.sort((a, b) =>
+                transactionQtySortAsc
+                    ? a.quantity_used - b.quantity_used
+                    : b.quantity_used - a.quantity_used
+            );
+            const qtySortArrow = document.getElementById('qtySortArrow');
+            if (qtySortArrow) {
+                qtySortArrow.textContent = transactionQtySortAsc ? '↑' : '↓';
+            }
+        } else {
+            const qtySortArrow = document.getElementById('qtySortArrow');
+            if (qtySortArrow) {
+                qtySortArrow.textContent = '';
+            }
+        }
+
         transactions.forEach(t => {
             const tr = document.createElement('tr');
             const date = new Date(t.date).toLocaleString();
@@ -401,5 +491,112 @@ async function loadEmployees() {
         });
     } catch (e) {
         console.error("Error loading employees:", e);
+    }
+}
+
+async function loadRecommendations() {
+    try {
+        const recommendationsBody = document.getElementById('recommendationsBody');
+        if (!recommendationsBody) return;
+
+        // Clear previous content
+        recommendationsBody.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; padding: 0.5rem 1rem;">Analyzing transaction data...</div>';
+
+        const [itemsRes, transRes] = await Promise.all([
+            fetch('/items'),
+            fetch('/transactions')
+        ]);
+
+        const items = await itemsRes.json();
+        const transactions = await transRes.json();
+
+        // Group transactions by item name and calculate total quantity used
+        const consumption = {};
+        let firstTransactionDate = new Date(); // To find the oldest transaction
+
+        transactions.forEach(t => {
+            const date = new Date(t.date);
+            if (date < firstTransactionDate) firstTransactionDate = date;
+
+            if (!consumption[t.item_name]) {
+                consumption[t.item_name] = 0;
+            }
+            consumption[t.item_name] += t.quantity_used;
+        });
+
+        // Calculate days elapsed since the very first transaction to determine average daily rate
+        // Minimum 1 day to prevent division by zero
+        const daysElapsed = Math.max(1, Math.ceil((new Date() - firstTransactionDate) / (1000 * 60 * 60 * 24)));
+
+        let alertsHtml = '';
+        let hasAlerts = false;
+
+        items.forEach(item => {
+            if (consumption[item.name]) {
+                const totalUsed = consumption[item.name];
+                const dailyRate = totalUsed / daysElapsed;
+
+                if (dailyRate > 0) {
+                    const daysLeft = Math.floor(item.quantity / dailyRate);
+
+                    if (daysLeft <= 3 && item.quantity > 0) {
+                        hasAlerts = true;
+                        alertsHtml += `
+                            <div style="background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; margin: 0 1rem;">
+                                <div>
+                                    <strong style="color: #f8fafc;">${item.name}</strong> 
+                                    <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 0.5rem;">Current Stock: ${item.quantity}</span>
+                                </div>
+                                <div style="color: #f59e0b; font-weight: 600; font-size: 0.9rem;">
+                                    Stock gonna finish in ${daysLeft === 0 ? 'less than 1' : daysLeft} day(s)!
+                                </div>
+                            </div>
+                        `;
+                    } else if (item.quantity === 0) {
+                        hasAlerts = true;
+                        alertsHtml += `
+                            <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; margin: 0 1rem;">
+                                <div>
+                                    <strong style="color: #f8fafc;">${item.name}</strong>
+                                </div>
+                                <div style="color: #ef4444; font-weight: 600; font-size: 0.9rem;">
+                                    Out of stock!
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } else if (item.quantity === 0) {
+                hasAlerts = true;
+                alertsHtml += `
+                    <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; margin: 0 1rem;">
+                        <div>
+                            <strong style="color: #f8fafc;">${item.name}</strong>
+                        </div>
+                        <div style="color: #ef4444; font-weight: 600; font-size: 0.9rem;">
+                            Out of stock!
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        if (!hasAlerts) {
+            alertsHtml = `
+                <div style="background-color: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 0.75rem 1rem; border-radius: 4px; display: flex; align-items: center; margin: 0 1rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span style="color: #10b981; font-weight: 500;">All stock levels are stable. No immediate restock required based on usage.</span>
+                </div>
+            `;
+        }
+
+        recommendationsBody.innerHTML = alertsHtml;
+
+    } catch (e) {
+        console.error("Error loading recommendations:", e);
+        const recommendationsBody = document.getElementById('recommendationsBody');
+        if (recommendationsBody) {
+            recommendationsBody.innerHTML = '<div style="color: #ef4444; font-size: 0.9rem; padding: 0.5rem 1rem;">Failed to load recommendations.</div>';
+        }
     }
 }
