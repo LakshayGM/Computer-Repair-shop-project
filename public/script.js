@@ -20,7 +20,7 @@ if (themeToggleBtn) {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        
+
         if (themeIcon) {
             themeIcon.innerHTML = newTheme === 'dark' ? sunSvg : moonSvg;
         }
@@ -356,10 +356,10 @@ async function loadItems() {
         // We'll just use the items array
         const labels = items.filter(item => item.quantity > 0).map(item => item.name);
         const data = items.filter(item => item.quantity > 0).map(item => item.quantity);
-        
+
         // Generate appealing colors based on length
         const colors = [
-            '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', 
+            '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444',
             '#ec4899', '#3b82f6', '#14b8a6', '#84cc16', '#a855f7'
         ];
         const bgColors = data.map((_, i) => colors[i % colors.length]);
@@ -387,9 +387,9 @@ async function loadItems() {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
+                        legend: {
                             position: 'right',
-                            labels: { color: '#f8fafc', boxWidth: 12, padding: 10, font: { size: 11 } } 
+                            labels: { color: '#f8fafc', boxWidth: 12, padding: 10, font: { size: 11 } }
                         }
                     },
                     cutout: '65%'
