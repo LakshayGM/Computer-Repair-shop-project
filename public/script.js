@@ -23,30 +23,7 @@ if (themeToggleBtn) {
         if (themeIcon) {
             themeIcon.innerHTML = newTheme === 'dark' ? sunSvg : moonSvg;
         }
-
-        if (typeof updateChartsTheme === 'function') {
-            updateChartsTheme(newTheme);
-        }
     });
-}
-
-function updateChartsTheme(theme) {
-    const textColor = theme === 'dark' ? '#94a3b8' : '#64748B';
-    const legendColor = theme === 'dark' ? '#f8fafc' : '#1e293b';
-    const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-
-    if (window.inventoryChartInstance) {
-        window.inventoryChartInstance.options.scales.y.grid.color = gridColor;
-        window.inventoryChartInstance.options.scales.y.ticks.color = textColor;
-        window.inventoryChartInstance.options.scales.x.ticks.color = textColor;
-        window.inventoryChartInstance.options.plugins.legend.labels.color = legendColor;
-        window.inventoryChartInstance.update();
-    }
-    
-    if (window.inventoryPieChartInstance) {
-        window.inventoryPieChartInstance.options.plugins.legend.labels.color = legendColor;
-        window.inventoryPieChartInstance.update();
-    }
 }
 
 // Global Auth Check
@@ -127,6 +104,7 @@ if (addItemForm) {
         itemNameSelect.addEventListener('change', (e) => {
             const selectedItem = e.target.value;
             if (averagePrices[selectedItem] !== undefined) {
+                // Formatting to 2 decimal places
                 itemPriceInput.value = averagePrices[selectedItem].toFixed(2);
             }
         });
@@ -200,26 +178,8 @@ if (addTransactionForm) {
 
     addTransactionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const selectItem = document.getElementById('transactionItem');
-        const item_id = selectItem.value;
-        const quantity_used = parseInt(document.getElementById('transactionQty').value, 10);
-
-        if (selectItem.selectedIndex > 0) {
-            const selectedOption = selectItem.options[selectItem.selectedIndex];
-            const maxAvailable = parseInt(selectedOption.dataset.max, 10);
-
-            if (quantity_used > maxAvailable) {
-                alert(`Cannot use more than available quantity (${maxAvailable})`);
-                return;
-            }
-            if (quantity_used <= 0) {
-                alert('Please enter a valid quantity.');
-                return;
-            }
-        } else {
-             alert('Please select an item first.');
-             return;
-        }
+        const item_id = document.getElementById('transactionItem').value;
+        const quantity_used = document.getElementById('transactionQty').value;
 
         const res = await fetch('/add-transaction', {
             method: 'POST',
@@ -275,11 +235,6 @@ async function loadItems() {
     // Update Chart.js if it exists
     const ctx = document.getElementById('inventoryChart');
     if (ctx) {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        const textColor = currentTheme === 'dark' ? '#94a3b8' : '#64748B';
-        const legendColor = currentTheme === 'dark' ? '#f8fafc' : '#1e293b';
-        const gridColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-
         const labels = items.map(item => item.name);
         const data = items.map(item => item.quantity);
         // Highlight low stock (e.g., < 5) in warning color
@@ -289,10 +244,6 @@ async function loadItems() {
             window.inventoryChartInstance.data.labels = labels;
             window.inventoryChartInstance.data.datasets[0].data = data;
             window.inventoryChartInstance.data.datasets[0].backgroundColor = bgColors;
-            window.inventoryChartInstance.options.scales.y.grid.color = gridColor;
-            window.inventoryChartInstance.options.scales.y.ticks.color = textColor;
-            window.inventoryChartInstance.options.scales.x.ticks.color = textColor;
-            window.inventoryChartInstance.options.plugins.legend.labels.color = legendColor;
             window.inventoryChartInstance.update();
         } else {
             window.inventoryChartInstance = new Chart(ctx, {
@@ -312,16 +263,16 @@ async function loadItems() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: gridColor },
-                            ticks: { color: textColor }
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { color: textColor }
+                            ticks: { color: '#94a3b8' }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: legendColor } }
+                        legend: { labels: { color: '#f8fafc' } }
                     }
                 }
             });
@@ -331,9 +282,6 @@ async function loadItems() {
     // Update Pie Chart if it exists
     const pieCtx = document.getElementById('inventoryPieChart');
     if (pieCtx) {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        const legendColor = currentTheme === 'dark' ? '#f8fafc' : '#1e293b';
-
         // Group quantities by category (if names have similarities, else just use item labels)
         // We'll just use the items array
         const labels = items.filter(item => item.quantity > 0).map(item => item.name);
@@ -350,7 +298,6 @@ async function loadItems() {
             window.inventoryPieChartInstance.data.labels = labels;
             window.inventoryPieChartInstance.data.datasets[0].data = data;
             window.inventoryPieChartInstance.data.datasets[0].backgroundColor = bgColors;
-            window.inventoryPieChartInstance.options.plugins.legend.labels.color = legendColor;
             window.inventoryPieChartInstance.update();
         } else {
             window.inventoryPieChartInstance = new Chart(pieCtx, {
@@ -371,7 +318,7 @@ async function loadItems() {
                     plugins: {
                         legend: {
                             position: 'right',
-                            labels: { color: legendColor, boxWidth: 12, padding: 10, font: { size: 11 } }
+                            labels: { color: '#f8fafc', boxWidth: 12, padding: 10, font: { size: 11 } }
                         }
                     },
                     cutout: '65%'
